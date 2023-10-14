@@ -31,7 +31,6 @@ network.train(train_data, train_labels)
 
 
 # Testing accuracy
-correct = 0
 total = test_labels.shape[0]
 predictions = [network.predict(n) for n in test_data]
 correct = np.count_nonzero(predictions == test_labels)
