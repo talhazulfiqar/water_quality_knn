@@ -33,9 +33,7 @@ network.train(train_data, train_labels)
 # Testing accuracy
 correct = 0
 total = test_labels.shape[0]
-for i in range(total):
-   prediction = network.predict(test_data[i])
-   if prediction == test_labels[i]:
-    correct += 1
+predictions = [network.predict(n) for n in test_data]
+correct = np.count_nonzero(predictions == test_labels)
 
 print("{}%".format((correct / total) * 100))
