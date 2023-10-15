@@ -7,8 +7,10 @@ df = pd.read_csv('water_potability.csv').dropna() #Dropna function is used to re
 total_entries = len(df)
 train_test_split = int(0.9 * total_entries)
 train_data = df[:train_test_split].to_numpy()[:,:9]
+train_data_normalized = train_data / train_data.sum(axis=0) #Normalize the data column-wise
 train_labels = df[:train_test_split].to_numpy()[:,9].astype(int)
 test_data = df[train_test_split:].to_numpy()[:,:9]
+test_data_normalized = test_data / test_data.sum(axis=0) #Normalize the data column-wise
 test_labels = df[train_test_split:].to_numpy()[:,9].astype(int)
 
 class kNN:
@@ -20,19 +22,19 @@ class kNN:
         self.labels = labels
     def predict(self, point):
         total_points = self.train_data.shape[0] #First value in shape is the total number of entries
-        all_distances = [np.sum(np.abs(p - point)) for p in self.train_data]
+        all_distances = [np.sqrt(np.sum((p - point)**2)) for p in self.train_data] # Calculate euclidean distance to all points
         smallest_k_values_indexes = np.argpartition(all_distances, self.k)[:self.k] #Find the indexes of the k neighbours with smallest distance to the given point
         closest_labels = self.labels[smallest_k_values_indexes]
         voted_result = np.bincount(closest_labels).argmax() #Count which label is more
         return voted_result
 
-network = kNN(12)
-network.train(train_data, train_labels)
-
+network = kNN(13)
+network.train(train_data_normalized, train_labels)
 
 # Testing accuracy
+correct = 0
 total = test_labels.shape[0]
-predictions = [network.predict(n) for n in test_data]
+predictions = [network.predict(n) for n in test_data_normalized]
 correct = np.count_nonzero(predictions == test_labels)
 
 print("{}%".format((correct / total) * 100))
